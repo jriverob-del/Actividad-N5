@@ -1,0 +1,4 @@
+private void btnClearActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        txtName.setText("");
+        txtNumber.setText("");
+    }    
