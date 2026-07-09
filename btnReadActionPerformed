@@ -1,0 +1,70 @@
+private void btnReadActionPerformed(java.awt.event.ActionEvent evt) {                                        
+        try {
+
+                        String nameNumberString;
+                        String name;
+
+                        String newName = String.valueOf(txtName.getText());
+                        
+                        long number; 
+                        int index;
+                        
+                        File file = new File("C:\\Users\\javie\\OneDrive\\Documents\\POO\\friendsContact.txt");
+
+                        if (file.exists() == false) {
+
+                            // Create a new file if not exists.
+                            file.createNewFile();
+                        }
+
+                        // Opening file in reading and write mode.
+
+                        RandomAccessFile raf = new RandomAccessFile(file, "rw");
+                        boolean found = false;
+
+                        // Traversing the file
+                        // getFilePointer() give the current offset
+                        // value from start of the file.
+                        while (raf.getFilePointer() < raf.length()) {
+
+                            // reading line from the file.
+                            nameNumberString = raf.readLine();
+
+                            // splitting the string to get name and
+                            // number
+                            String[] lineSplit = nameNumberString.split("!");
+
+                            // separating name and number.
+                            name = lineSplit[0];
+                            number = Long.parseLong(lineSplit[1]);
+                            
+                            if (name.equals(newName)) {
+                                
+                                txtName.setText(String.valueOf(name));
+                                txtNumber.setText(String.valueOf(number));
+                                
+                                    found = true;
+                            }
+                           
+                      
+                    }
+                    raf.close();
+
+                    if (found == false) {
+                        JOptionPane.showMessageDialog(this, "The friend " + newName + " does not exist");
+                            
+                        }
+                               
+            }        
+
+                    catch (IOException ioe)
+                    {
+
+                            System.out.println(ioe);
+                        }
+                        catch (NumberFormatException nef)
+                        {
+
+                            System.out.println(nef);
+                        }
+    }
