@@ -1,0 +1,122 @@
+private void btnDeleteActionPerformed(java.awt.event.ActionEvent evt) {                                          
+        try {
+
+    String newName = String.valueOf(txtName.getText()).trim();
+
+    if (newName.isEmpty()) {
+        JOptionPane.showMessageDialog(null, "Input name is empty.");
+        return;
+    }
+
+    String nameNumberString;
+    String name;
+    long number;
+    int index;
+
+    File file = new File("C:\\Users\\javie\\OneDrive\\Documents\\POO\\friendsContact.txt");
+
+    if (file.exists() == false) {
+        file.createNewFile();
+    }
+
+    RandomAccessFile raf = new RandomAccessFile(file, "rw");
+
+    boolean found = false;
+
+    // First, search if the friend exists
+    while (raf.getFilePointer() < raf.length()) {
+
+        nameNumberString = raf.readLine();
+
+        String[] lineSplit = nameNumberString.split("!");
+
+        name = lineSplit[0];
+        number = Long.parseLong(lineSplit[1]);
+
+        if (name.equals(newName)) {
+            found = true;
+            break;
+        }
+    }
+
+    if (found == true) {
+
+        int option = JOptionPane.showConfirmDialog(
+                null,
+                "Do you want to delete the friend " + newName + "?",
+                "Delete",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (option == JOptionPane.YES_OPTION) {
+
+            File tmpFile = new File("C:\\Users\\javie\\OneDrive\\Documents\\POO\\temp.txt");
+
+            RandomAccessFile tmpraf = new RandomAccessFile(tmpFile, "rw");
+
+            // Clean temp file before using it
+            tmpraf.setLength(0);
+
+            // Set file pointer to start
+            raf.seek(0);
+
+            // Copy all records except the one to delete
+            while (raf.getFilePointer() < raf.length()) {
+
+                nameNumberString = raf.readLine();
+
+                index = nameNumberString.indexOf('!');
+                name = nameNumberString.substring(0, index);
+
+                if (name.equals(newName)) {
+                    continue;
+                }
+
+                tmpraf.writeBytes(nameNumberString);
+                tmpraf.writeBytes(System.lineSeparator());
+            }
+
+            // Copy temp file back to original file
+            raf.seek(0);
+            raf.setLength(0);
+            tmpraf.seek(0);
+
+            while (tmpraf.getFilePointer() < tmpraf.length()) {
+                raf.writeBytes(tmpraf.readLine());
+                raf.writeBytes(System.lineSeparator());
+            }
+
+            tmpraf.close();
+            raf.close();
+
+            tmpFile.delete();
+
+            JOptionPane.showMessageDialog(null, "The friend " + newName + " was deleted.");
+
+            txtName.setText("");
+            txtNumber.setText("");
+            txtName.requestFocus();
+
+        } else {
+            raf.close();
+        }
+
+    } else {
+
+        raf.close();
+
+        JOptionPane.showMessageDialog(
+                null,
+                "The friend " + newName + " does not exist."
+        );
+    }
+
+} catch (IOException ioe) {
+
+    System.out.println(ioe);
+
+} catch (NumberFormatException nef) {
+
+    System.out.println(nef);
+}
+    }
